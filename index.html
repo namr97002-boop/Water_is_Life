@@ -190,6 +190,38 @@
             color: #0077b6;
             margin-left: 5px;
         }
+        
+        .user-info-box {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-right: 4px solid var(--primary);
+            text-align: right;
+        }
+        
+        .user-info-box h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .user-info-box p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .user-role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
 
         /* جميع الأنماط السابقة تبقى كما هي */
         :root {
@@ -703,37 +735,44 @@
             100% { border-right-color: var(--focus-color); }
         }
 
-        /* زر الميكروفون في الخلايا */
+        /* زر الميكروفون في الخلايا - تم تحسينه */
         .microphone-cell-btn {
-            position: absolute;
-            left: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            padding: 2px 5px;
-            font-size: 0.8rem;
-            opacity: 0.5;
-            transition: opacity 0.3s, color 0.3s;
-            z-index: 5;
+            position: absolute !important;
+            left: 5px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            background: var(--primary) !important;
+            color: white !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 8px 10px !important;
+            font-size: 1.1rem !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+            transition: all 0.3s !important;
+            z-index: 100 !important;
+            width: 40px !important;
+            height: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .microphone-cell-btn:hover {
-            opacity: 1;
-            color: var(--secondary);
+            background: var(--secondary) !important;
+            transform: translateY(-50%) scale(1.1) !important;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
         }
 
         .microphone-cell-btn.listening {
-            color: var(--danger);
-            opacity: 1;
-            animation: pulse 1.5s infinite;
+            background: var(--danger) !important;
+            color: white !important;
+            animation: pulse 1.5s infinite !important;
         }
 
         td.editable {
             position: relative;
-            padding-left: 30px !important;
+            padding-left: 50px !important;
         }
 
         .alert-section {
@@ -1601,26 +1640,19 @@ body {
 .login-screen {
     position: fixed !important;
     top: 0 !important;
-    right: 0 !important; /* تجعلها تبدأ من اليمين */
+    right: 0 !important;
     left: 0 !important;
+    bottom: 0 !important; /* أضفنا هذا لضمان عدم التحرك للأسفل */
     width: 100vw !important;
     height: 100vh !important;
-    background-color: var(--background) !important;
+    background-color: #0077b6 !important; /* اخترت لك اللون الأزرق لضمان تغطية الشاشة */
     z-index: 99999 !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important; /* تضع المربع في منتصف الرؤية تماماً */
+    justify-content: center !important;
+    overflow: hidden !important; /* يمنع ظهور شريط التمرير */
+    touch-action: none !important; /* يمنع تحريك الشاشة باللمس في الجوال */
 }
-
-.login-card {
-    width: 90% !important;
-    max-width: 380px !important;
-    margin: auto !important;
-    /* نضمن عدم انزياح الكرت لليسار */
-    transform: none !important; 
-    direction: rtl !important; /* توجيه الكتابة من اليمين لليسار */
-}
-
     </style>
 </head>
 
@@ -1636,30 +1668,30 @@ body {
             
             <div class="login-form">
                 <div class="login-input-group">
-                    <label for="passwordInput">كلمة المرور:</label>
+                    <label for="passwordInput">أدخل كود المستخدم:</label>
                     <input 
                         type="password" 
                         id="passwordInput" 
                         class="login-input" 
-                        placeholder="أدخل كلمة المرور" 
+                        placeholder="أدخل كود المستخدم (4 أرقام)" 
                         maxlength="4"
                         autocomplete="off"
                         onkeyup="checkEnterKey(event)"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
                     >
-                    <small style="color: #666; display: block; margin-top: 5px; font-size: 0.8rem;">
-                        كلمة المرور: 2020
-                    </small>
                 </div>
                 
-                <p class="login-error" id="loginError">كلمة المرور غير صحيحة، حاول مرة أخرى</p>
-
-<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
-    <span style="font-size: 12px; color: #888; display: block; font-family: 'Tajawal', sans-serif;">تصميم وإعداد وتنفيذ</span>
-    <strong style="font-size: 16px; color: #0077b6; font-family: 'Tajawal', sans-serif;">نصر العامري</strong>
-</div>
-
+                <p class="login-error" id="loginError">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorText">كلمة المرور غير صحيحة</span>
+                    <span id="errorText">كود المستخدم غير صحيح</span>
+                </p>
+                
+                <div id="userInfoBox" class="user-info-box" style="display: none;">
+                    <h4><i class="fas fa-user-circle"></i> معلومات المستخدم</h4>
+                    <p><strong>الاسم:</strong> <span id="userName"></span></p>
+                    <p><strong>الصلاحية:</strong> <span id="userRole" class="user-role-badge"></span></p>
+                    <p><strong>الإجراءات المسموحة:</strong> <span id="userPermissions"></span></p>
                 </div>
                 
                 <button onclick="checkPassword()" class="login-btn">
@@ -1670,6 +1702,11 @@ body {
                     <i class="fas fa-info-circle"></i>
                     يمكنك تثبيت هذا التطبيق على جهازك للاستخدام دون الحاجة للاتصال بالإنترنت
                 </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
+                <span style="font-size: 12px; color: #888; display: block; font-family: 'Tajawal', sans-serif;">تصميم وإعداد وتنفيذ</span>
+                <strong style="font-size: 16px; color: #0077b6; font-family: 'Tajawal', sans-serif;">نصر العامري</strong>
             </div>
         </div>
     </div>
@@ -1746,6 +1783,21 @@ body {
         <div class="sidebar">
             <div class="logo">
                 <h2><i class="fas fa-water"></i> مشروع السوفعي</h2>
+            </div>
+
+            <!-- قسم معلومات المستخدم في القائمة الجانبية -->
+            <div id="userSidebarInfo" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="fas fa-user-circle fa-2x"></i>
+                    <div>
+                        <div style="font-weight: bold; font-size: 1.1rem;" id="sidebarUserName"></div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;" id="sidebarUserRole"></div>
+                    </div>
+                </div>
+                <div style="font-size: 0.85rem; opacity: 0.9;" id="sidebarUserPermissions"></div>
+                <button onclick="logout()" style="width: 100%; margin-top: 10px; background-color: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 8px; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
             </div>
 
             <div class="feature-tabs">
@@ -2069,9 +2121,303 @@ body {
     </div>
 
     <script>
-        // ===== نظام شاشة الدخول =====
-        const PASSWORD = "2020"; // كلمة المرور الثابتة
+        // ===== نظام التعرف الصوتي المحسن =====
+        const VoiceRecognition = {
+            recognition: null,
+            isListening: false,
+            currentCell: null,
+            currentSearchField: null,
+            
+            init: function() {
+                // التحقق من دعم Web Speech API
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    console.warn('Web Speech API غير مدعوم في هذا المتصفح');
+                    return false;
+                }
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                
+                // إعداد خصائص التعرف الصوتي
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                this.recognition.lang = 'ar-SA'; // اللغة العربية السعودية
+                
+                // أحداث التعرف الصوتي
+                this.recognition.onstart = () => {
+                    this.isListening = true;
+                    if (this.currentCell) {
+                        this.currentCell.querySelector('.microphone-cell-btn').classList.add('listening');
+                    }
+                    if (this.currentSearchField) {
+                        document.getElementById('searchMicrophoneBtn').classList.add('listening');
+                    }
+                    document.getElementById('voiceRecognitionPopup').classList.add('listening');
+                    document.getElementById('voiceStatus').textContent = 'جاري الاستماع...';
+                };
+                
+                this.recognition.onresult = async (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    console.log('الكلام المقروء:', transcript);
+                    
+                    // تحويل النص العربي إلى أرقام إنجليزية
+                    const number = this.convertArabicToNumbers(transcript);
+                    document.getElementById('voiceResult').textContent = `الرقم: ${number}`;
+                    
+                    // التحقق من الصلاحية قبل الإدخال
+                    if (this.currentCell) {
+                        const colIndex = Array.from(this.currentCell.parentNode.cells).indexOf(this.currentCell);
+                        
+                        // إجبار الخلية على كتابة الرقم
+                        this.forceCellValue(this.currentCell, number);
+                        
+                        // حفظ الخلية فوراً
+                        await this.saveCellImmediately(this.currentCell);
+                        
+                    } else if (this.currentSearchField) {
+                        this.currentSearchField.value = transcript;
+                        // تشغيل حدث البحث
+                        const event = new Event('input', { bubbles: true });
+                        this.currentSearchField.dispatchEvent(event);
+                    }
+                };
+                
+                this.recognition.onerror = (event) => {
+                    console.error('خطأ في التعرف الصوتي:', event.error);
+                    document.getElementById('voiceStatus').textContent = `خطأ: ${event.error}`;
+                    this.stop();
+                };
+                
+                this.recognition.onend = () => {
+                    this.stop();
+                };
+                
+                return true;
+            },
+            
+            forceCellValue: function(cell, value) {
+                // إجبار الخلية على كتابة الرقم مباشرة
+                cell.textContent = value;
+                cell.focus();
+                
+                // إضافة رسالة تأكيد
+                showToast(`تم إدخال الرقم: ${value}`, 'success', 2000);
+            },
+            
+            async saveCellImmediately(cell) {
+                // الحصول على بيانات الخلية
+                const originalIndex = parseInt(cell.getAttribute('data-original-index'));
+                const colIndex = Array.from(cell.parentNode.cells).indexOf(cell);
+                
+                if (isNaN(originalIndex) || colIndex === -1) {
+                    console.error('لا يمكن حفظ الخلية: بيانات غير صالحة');
+                    return;
+                }
+                
+                // استخدام دالة حفظ الخلية الأصلية
+                try {
+                    await saveCell(originalIndex, colIndex, cell);
+                    console.log('تم حفظ الخلية بنجاح');
+                } catch (error) {
+                    console.error('خطأ في حفظ الخلية:', error);
+                    showToast('خطأ في حفظ البيانات', 'error');
+                }
+            },
+            
+            startForCell: function(cell) {
+                // التحقق من الصلاحية أولاً
+                const colIndex = Array.from(cell.parentNode.cells).indexOf(cell);
+                if (!checkCellPermission(colIndex)) {
+                    showSaveNotification(false, "ليس لديك صلاحية للتعديل في هذا العمود");
+                    return;
+                }
+                
+                if (!this.recognition) {
+                    if (!this.init()) {
+                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
+                        return;
+                    }
+                }
+                
+                this.currentCell = cell;
+                this.currentSearchField = null;
+                
+                // عرض نافذة التعرف الصوتي
+                document.getElementById('voiceRecognitionPopup').classList.add('active');
+                document.getElementById('voiceStatus').textContent = 'انطق الرقم الآن...';
+                document.getElementById('voiceResult').textContent = '';
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('خطأ في بدء التعرف الصوتي:', error);
+                    showToast('خطأ في بدء التعرف الصوتي', 'error');
+                }
+            },
+            
+            startForSearch: function(searchField) {
+                if (!this.recognition) {
+                    if (!this.init()) {
+                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
+                        return;
+                    }
+                }
+                
+                this.currentSearchField = searchField;
+                this.currentCell = null;
+                
+                // عرض نافذة التعرف الصوتي
+                document.getElementById('voiceRecognitionPopup').classList.add('active');
+                document.getElementById('voiceStatus').textContent = 'انطق اسم المشترك للبحث...';
+                document.getElementById('voiceResult').textContent = '';
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('خطأ في بدء التعرف الصوتي:', error);
+                    showToast('خطأ في بدء التعرف الصوتي', 'error');
+                }
+            },
+            
+            stop: function() {
+                if (this.recognition && this.isListening) {
+                    try {
+                        this.recognition.stop();
+                    } catch (error) {
+                        console.error('خطأ في إيقاف التعرف الصوتي:', error);
+                    }
+                }
+                
+                this.isListening = false;
+                
+                // إزالة حالة الاستماع من الأزرار
+                if (this.currentCell) {
+                    const btn = this.currentCell.querySelector('.microphone-cell-btn');
+                    if (btn) btn.classList.remove('listening');
+                }
+                
+                if (this.currentSearchField) {
+                    document.getElementById('searchMicrophoneBtn').classList.remove('listening');
+                }
+                
+                document.getElementById('voiceRecognitionPopup').classList.remove('listening');
+                
+                // إخفاء نافذة التعرف الصوتي بعد ثانيتين
+                setTimeout(() => {
+                    if (!this.isListening) {
+                        document.getElementById('voiceRecognitionPopup').classList.remove('active');
+                    }
+                }, 2000);
+                
+                this.currentCell = null;
+                this.currentSearchField = null;
+            },
+            
+            convertArabicToNumbers: function(text) {
+                if (!text) return '';
+                
+                // قاموس تحويل الأرقام العربية إلى إنجليزية
+                const numberMap = {
+                    'صفر': '0', '٠': '0',
+                    'واحد': '1', 'احد': '1', '١': '1',
+                    'اثنان': '2', 'اثنين': '2', '٢': '2',
+                    'ثلاثة': '3', 'ثلاث': '3', '٣': '3',
+                    'أربعة': '4', 'اربع': '4', 'اربعة': '4', '٤': '4',
+                    'خمسة': '5', 'خمس': '5', '٥': '5',
+                    'ستة': '6', 'ست': '6', '٦': '6',
+                    'سبعة': '7', 'سبع': '7', '٧': '7',
+                    'ثمانية': '8', 'ثمان': '8', '٨': '8',
+                    'تسعة': '9', 'تسع': '9', '٩': '9',
+                    'عشرة': '10', 'عشر': '10',
+                    'مائة': '100', 'مئه': '100',
+                    'ألف': '1000', 'الف': '1000',
+                    'مليون': '1000000'
+                };
+                
+                // تحويل النص إلى أرقام
+                let result = text;
+                
+                // استبدال الأرقام العربية
+                for (const [key, value] of Object.entries(numberMap)) {
+                    const regex = new RegExp(key, 'g');
+                    result = result.replace(regex, value);
+                }
+                
+                // إزالة أي أحرف غير رقمية (باستثناء النقاط والأرقام)
+                result = result.replace(/[^\d.]/g, '');
+                
+                return result;
+            }
+        };
+
+        // دالة لإيقاف التعرف الصوتي من خارج الكائن
+        function stopVoiceRecognition() {
+            VoiceRecognition.stop();
+        }
+
+        // ===== تعريف المستخدمين والصلاحيات =====
+        const USERS = {
+            "5674": {
+                name: "المدير",
+                role: "admin",
+                permissions: {
+                    editK: true,  // عمود K (إيرادات أخرى)
+                    editL: true,  // عمود L (المسلم)
+                    editD: true,  // عمود D (قراءة حالية)
+                    editN: true,  // عمود N (ملاحظات)
+                    viewAll: true,
+                    export: true,
+                    backup: true,
+                    sync: true
+                }
+            },
+            "6785": {
+                name: "أمين الصندوق",
+                role: "cashier",
+                permissions: {
+                    editK: true,  // عمود K (إيرادات أخرى)
+                    editL: true,  // عمود L (المسلم)
+                    editD: false, // عمود D (قراءة حالية)
+                    editN: true,  // عمود N (ملاحظات)
+                    viewAll: true,
+                    export: true,
+                    backup: false,
+                    sync: true
+                }
+            },
+            "3452": {
+                name: "المحاسب",
+                role: "accountant",
+                permissions: {
+                    editK: false,  // عمود K (إيرادات أخرى)
+                    editL: false,  // عمود L (المسلم)
+                    editD: false,  // عمود D (قراءة حالية)
+                    editN: false,  // عمود N (ملاحظات)
+                    viewAll: true,
+                    export: true,
+                    backup: false,
+                    sync: false
+                }
+            },
+            "4562": {
+                name: "قارئ العداد",
+                role: "reader",
+                permissions: {
+                    editK: false,  // عمود K (إيرادات أخرى)
+                    editL: false,  // عمود L (المسلم)
+                    editD: true,   // عمود D (قراءة حالية)
+                    editN: true,   // عمود N (ملاحظات)
+                    viewAll: true,
+                    export: false,
+                    backup: false,
+                    sync: true
+                }
+            }
+        };
+
+        let currentUser = null;
         
+        // ===== نظام شاشة الدخول المحسن =====
         function checkEnterKey(event) {
             if (event.key === "Enter") {
                 checkPassword();
@@ -2082,36 +2428,45 @@ body {
             const passwordInput = document.getElementById("passwordInput");
             const loginError = document.getElementById("loginError");
             const errorText = document.getElementById("errorText");
+            const userInfoBox = document.getElementById("userInfoBox");
             
-            const enteredPassword = passwordInput.value.trim();
+            const enteredCode = passwordInput.value.trim();
             
-            if (enteredPassword === PASSWORD) {
-                // كلمة المرور صحيحة
+            // التحقق من المستخدم
+            if (USERS[enteredCode]) {
+                currentUser = USERS[enteredCode];
+                
+                // عرض معلومات المستخدم
+                document.getElementById("userName").textContent = currentUser.name;
+                document.getElementById("userRole").textContent = currentUser.role === "admin" ? "مدير النظام" : 
+                                                                  currentUser.role === "cashier" ? "أمين الصندوق" :
+                                                                  currentUser.role === "accountant" ? "محاسب" : "قارئ العداد";
+                
+                // عرض الصلاحيات
+                let permissionsText = "";
+                if (currentUser.permissions.editD) permissionsText += "تعديل القراءات، ";
+                if (currentUser.permissions.editK) permissionsText += "تعديل الإيرادات، ";
+                if (currentUser.permissions.editL) permissionsText += "تعديل المسلم، ";
+                if (currentUser.permissions.editN) permissionsText += "إضافة ملاحظات، ";
+                if (currentUser.permissions.viewAll) permissionsText += "عرض جميع البيانات";
+                
+                document.getElementById("userPermissions").textContent = permissionsText.replace(/، $/, "");
+                
+                userInfoBox.style.display = "block";
                 loginError.classList.remove("show");
                 passwordInput.classList.remove("error");
                 
-                // إخفاء شاشة الدخول بسلاسة
-                const loginScreen = document.getElementById("loginScreen");
-                loginScreen.classList.add("hidden");
-                
-                // بدء نظام PWA بعد الدخول
+                // السماح للمستخدم بالدخول بعد تأكيد
                 setTimeout(() => {
-                    initPWA();
-                }, 500);
-                
-                // حفظ حالة الدخول في localStorage (لمدة جلسة واحدة)
-                sessionStorage.setItem("loggedIn", "true");
-                
-                // عرض رسالة ترحيبية
-                setTimeout(() => {
-                    showToast('مرحباً بك في نظام إدارة مياه السوفعي', 'success', 3000);
-                }, 800);
+                    loginToSystem();
+                }, 1500);
                 
             } else {
-                // كلمة المرور خاطئة
+                // كود المستخدم خاطئ
                 passwordInput.classList.add("error");
-                errorText.textContent = "كلمة المرور غير صحيحة. حاول مرة أخرى.";
+                errorText.textContent = "كود المستخدم غير صحيح. حاول مرة أخرى.";
                 loginError.classList.add("show");
+                userInfoBox.style.display = "none";
                 
                 // اهتزاز الحقل
                 passwordInput.focus();
@@ -2134,17 +2489,128 @@ body {
             }
         }
         
+        function loginToSystem() {
+            const loginScreen = document.getElementById("loginScreen");
+            
+            // إخفاء شاشة الدخول بسلاسة
+            loginScreen.classList.add("hidden");
+            
+            // بدء نظام PWA بعد الدخول
+            setTimeout(() => {
+                initPWA();
+            }, 500);
+            
+            // حفظ حالة الدخول في localStorage
+            sessionStorage.setItem("loggedIn", "true");
+            sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+            
+            // تحديث معلومات المستخدم في القائمة الجانبية
+            updateSidebarUserInfo();
+            
+            // عرض رسالة ترحيبية
+            setTimeout(() => {
+                showToast(`مرحباً بك ${currentUser.name} في نظام إدارة مياه السوفعي`, 'success', 3000);
+            }, 800);
+            
+            // تطبيق الصلاحيات
+            applyUserPermissions();
+            
+            // تحميل البيانات بعد الدخول
+            setTimeout(() => {
+                dataManager.loadData(true);
+            }, 1000);
+        }
+        
+        function updateSidebarUserInfo() {
+            const sidebarInfo = document.getElementById("userSidebarInfo");
+            if (sidebarInfo && currentUser) {
+                sidebarInfo.style.display = "block";
+                document.getElementById("sidebarUserName").textContent = currentUser.name;
+                document.getElementById("sidebarUserRole").textContent = 
+                    currentUser.role === "admin" ? "مدير النظام" : 
+                    currentUser.role === "cashier" ? "أمين الصندوق" :
+                    currentUser.role === "accountant" ? "محاسب" : "قارئ العداد";
+                
+                let permissionsText = "صلاحيات: ";
+                if (currentUser.permissions.editD) permissionsText += "قراءات، ";
+                if (currentUser.permissions.editK) permissionsText += "إيرادات، ";
+                if (currentUser.permissions.editL) permissionsText += "مدفوعات، ";
+                if (currentUser.permissions.editN) permissionsText += "ملاحظات";
+                
+                document.getElementById("sidebarUserPermissions").textContent = permissionsText.replace(/، $/, "");
+            }
+        }
+        
+        function applyUserPermissions() {
+            if (!currentUser) return;
+            
+            const permissions = currentUser.permissions;
+            
+            // تحديث واجهة الأزرار بناءً على الصلاحيات
+            const syncBtn = document.getElementById("syncBtn");
+            const exportBtn = document.getElementById("exportBtn");
+            const backupBtn = document.getElementById("backupBtn");
+            const aiAnalysisBtn = document.getElementById("aiAnalysisBtn");
+            
+            if (syncBtn) syncBtn.disabled = !permissions.sync;
+            if (exportBtn) exportBtn.disabled = !permissions.export;
+            if (backupBtn) backupBtn.disabled = !permissions.backup;
+            
+            // إذا كان المحاسب (عرض فقط) نخفي بعض الأزرار
+            if (currentUser.role === "accountant") {
+                if (syncBtn) syncBtn.style.display = "none";
+                if (aiAnalysisBtn) aiAnalysisBtn.style.display = "none";
+            } else {
+                if (syncBtn) syncBtn.style.display = "block";
+                if (aiAnalysisBtn) aiAnalysisBtn.style.display = "block";
+            }
+            
+            // تحديث حالة النظام
+            updateStatus(`مرحباً ${currentUser.name} - الصلاحية: ${currentUser.role}`);
+        }
+        
+        function logout() {
+            if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+                // مسح بيانات الجلسة
+                sessionStorage.removeItem("loggedIn");
+                sessionStorage.removeItem("currentUser");
+                sessionStorage.removeItem("failedAttempts");
+                
+                // إعادة تحميل الصفحة للعودة لشاشة الدخول
+                location.reload();
+            }
+        }
+        
         // التحقق من حالة الدخول السابقة عند تحميل الصفحة
         function checkPreviousLogin() {
             const loggedIn = sessionStorage.getItem("loggedIn");
+            const savedUser = sessionStorage.getItem("currentUser");
             const loginScreen = document.getElementById("loginScreen");
             
-            if (loggedIn === "true") {
-                // إخفاء شاشة الدخول إذا كان المستخدم قد دخل من قبل في هذه الجلسة
-                loginScreen.classList.add("hidden");
-                setTimeout(() => {
-                    initPWA();
-                }, 100);
+            if (loggedIn === "true" && savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    
+                    // إخفاء شاشة الدخول إذا كان المستخدم قد دخل من قبل
+                    loginScreen.classList.add("hidden");
+                    
+                    // تحديث معلومات المستخدم
+                    updateSidebarUserInfo();
+                    applyUserPermissions();
+                    
+                    setTimeout(() => {
+                        initPWA();
+                        // تحميل البيانات بعد الدخول
+                        setTimeout(() => {
+                            dataManager.loadData(true);
+                        }, 500);
+                    }, 100);
+                } catch (error) {
+                    console.error("Error parsing saved user:", error);
+                    // إظهار شاشة الدخول في حالة الخطأ
+                    loginScreen.style.display = "flex";
+                    document.getElementById("passwordInput").focus();
+                }
             } else {
                 // إظهار شاشة الدخول
                 loginScreen.style.display = "flex";
@@ -2152,6 +2618,267 @@ body {
             }
         }
         
+        // ===== وظيفة التحقق من صلاحيات الخلية (تم إصلاحها) =====
+        function checkCellPermission(colIndex) {
+            if (!currentUser) return false;
+            
+            const permissions = currentUser.permissions;
+            
+            // تحقق من الصلاحية بناءً على العمود
+            switch(colIndex) {
+                case 3: // عمود D (قراءة حالية)
+                    return permissions.editD;
+                case 10: // عمود K (إيرادات أخرى)
+                    return permissions.editK;
+                case 11: // عمود L (المسلم)
+                    return permissions.editL;
+                case 13: // عمود N (ملاحظات)
+                    return permissions.editN;
+                default:
+                    return false; // الأعمدة الأخرى ليست قابلة للتحرير
+            }
+        }
+        
+        // ===== تعديل وظيفة حفظ الخلية للتحقق من الصلاحيات =====
+        async function saveCell(originalIndex, colIndex, cell) {
+            // التحقق من صلاحيات المستخدم أولاً
+            if (!checkCellPermission(colIndex)) {
+                showSaveNotification(false, "ليس لديك صلاحية للتعديل في هذا العمود");
+                const oldValue = dataManager.currentData[originalIndex][colIndex];
+                cell.textContent = formatNumber(oldValue, false, colIndex);
+                return;
+            }
+            
+            const rowData = dataManager.currentData[originalIndex];
+            const colDef = COLUMN_HEADERS.find(h => h.col === colIndex);
+
+            let rawValue = cell.textContent.trim();
+            let valueToSend = String(rawValue).replace(/,/g, '').trim();
+            
+            if ((colIndex === 11 || colIndex === 10) && (valueToSend === "" || valueToSend === "0")) {
+                valueToSend = "0";
+            }
+
+            const validation = validateCellInput(colIndex, rawValue, rowData);
+            if (!validation.isValid) {
+                showSaveNotification(false, validation.message);
+                const oldValue = dataManager.currentData[originalIndex][colIndex];
+                cell.textContent = formatNumber(oldValue, false, colIndex);
+                cell.focus();
+                return;
+            }
+
+            const colLetter = colDef.letter;
+
+            let newRow = rowData;
+            if (colIndex !== 13) {
+                newRow = recalculateRow(rowData, colIndex, valueToSend);
+            }
+            
+            // تحديث البيانات المحلية
+            dataManager.currentData[originalIndex] = newRow;
+            dataManager.updateRowCells(originalIndex, newRow);
+
+            // حفظ البيانات محلياً
+            await saveDataLocally(villageSelect.value, monthSelect.value, dataManager.currentData);
+
+            // إضافة مهمة مزامنة فقط إذا كان المستخدم لديه صلاحية المزامنة
+            if (currentUser && currentUser.permissions.sync) {
+                const taskId = await syncManager.addSyncTask({
+                    sheet: monthSelect.value,
+                    row: originalIndex + 1,
+                    col: colLetter,
+                    value: valueToSend,
+                    village: villageSelect.value,
+                    timestamp: Date.now()
+                });
+
+                // تحديث واجهة الخلية
+                const globalRowIndex = dataManager.filteredData.findIndex(row => row === dataManager.currentData[originalIndex]);
+                if (globalRowIndex !== -1) {
+                    const tableRow = tableBody.rows[globalRowIndex + 1];
+                    if (tableRow && tableRow.cells[colIndex]) {
+                        tableRow.cells[colIndex].classList.add('pending-cell');
+                        tableRow.cells[colIndex].title = "تغيير معلق - جاري المزامنة";
+                    }
+                }
+            }
+
+            showSaveNotification(true, 'تم حفظ التغيير' + (currentUser.permissions.sync ? ' وجاهز للمزامنة' : ' محلياً'));
+            updateStatus('تم حفظ التغيير' + (currentUser.permissions.sync ? ' وجاهز للمزامنة' : ' محلياً'));
+        }
+        
+        // ===== تعديل وظيفة renderTable لتطبيق الصلاحيات =====
+        function renderTable(data) {
+            // تنظيف الجدول القديم
+            tableBody.innerHTML = "";
+
+            if (!data || data.length < 3) {
+                renderErrorTable('لا توجد بيانات أو نتائج مطابقة.');
+                return;
+            }
+
+            const headerRow = document.createElement("tr");
+            COLUMN_HEADERS.forEach(col => {
+                const th = document.createElement("th");
+                th.style.width = col.width || 'auto';
+                th.innerHTML = `<i class="${col.icon}"></i> ${col.letter} <br> <span>${col.label}</span>`;
+                headerRow.appendChild(th);
+            });
+            tableBody.appendChild(headerRow);
+
+            data.forEach((row, rIndex) => {
+                if (rIndex === 0) return;
+
+                const tr = document.createElement("tr");
+                const originalIndex = dataManager.currentData.findIndex(d => d === row);
+                const isTotalRow = originalIndex === dataManager.totalRowIndex;
+                const isInfoRow = originalIndex === 1;
+                const isDataRow = originalIndex >= 2 && !isTotalRow;
+                
+                const consumptionF2 = parseFloat(row[5]) || 0;
+
+                if (isTotalRow) {
+                    tr.classList.add("total-row");
+                }
+                
+                if (consumptionF2 > 0 && isDataRow) {
+                    tr.style.backgroundColor = 'rgba(0, 180, 216, 0.1)';
+                    tr.style.borderRight = '4px solid var(--secondary)';
+                }
+
+                if (isInfoRow) {
+                    tr.style.backgroundColor = '#f0f0f0';
+                    tr.style.fontWeight = 'bold';
+                    tr.style.color = 'var(--primary)';
+                }
+
+                COLUMN_HEADERS.forEach((colDef, c) => {
+                    const td = document.createElement("td");
+                    let cellValue = row[c] !== undefined ? row[c] : "";
+
+                    if (c === 0) td.classList.add('col-a-bg');
+                    if (c === 1) td.classList.add('col-b-bg');
+
+                    if (c === 0 || (c >= 2 && c <= 12)) {
+                        td.textContent = formatNumber(cellValue, false, c);
+                        td.classList.add("number-cell");
+                    } else {
+                        td.textContent = cellValue;
+                    }
+
+                    if (c === 1) {
+                        td.classList.add("name-cell");
+                    }
+
+                    if (c === 5 && consumptionF2 > 0) {
+                        td.style.backgroundColor = 'var(--secondary)';
+                        td.style.color = 'white';
+                        td.style.fontWeight = 'bold';
+                    }
+
+                    if (c === 12 && !isNaN(row[c]) && parseFloat(row[c]) >= LATE_BALANCE_THRESHOLD && isDataRow) {
+                        td.style.backgroundColor = 'var(--danger)';
+                        td.style.color = 'white';
+                        td.style.fontWeight = 'bold';
+                    }
+
+                    // التحقق من الصلاحية قبل جعل الخلية قابلة للتحرير
+                    const canEdit = colDef.editable && isDataRow && checkCellPermission(c);
+                    
+                    if (canEdit) {
+                        td.classList.add("editable");
+                        td.contentEditable = true;
+                        td.setAttribute('data-original-index', originalIndex);
+                        
+                        // إضافة زر الميكروفون المحسن للخلايا القابلة للتحرير
+                        if (c === 11 || c === 10 || c === 3) {
+                            const microphoneBtn = document.createElement("button");
+                            microphoneBtn.className = "microphone-cell-btn";
+                            microphoneBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                            microphoneBtn.title = "إدخال صوتي (اضغط للبدء)";
+                            microphoneBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                VoiceRecognition.startForCell(td);
+                            };
+                            td.appendChild(microphoneBtn);
+                        }
+
+                        td.onfocus = () => {
+                            tr.classList.add('active-row');
+                            
+                            let raw = String(row[c] || "").replace(/,/g, '').trim();
+                            
+                            if (c === 3 || c === 11 || c === 10) {
+                                if ((c === 11 || c === 10) && (raw === "0.00" || raw === "0" || raw === "")) {
+                                    td.textContent = "";
+                                } else {
+                                    td.textContent = parseFloat(raw) || "";
+                                }
+                            } else {
+                                td.textContent = raw;
+                            }
+                            
+                            const range = document.createRange();
+                            range.selectNodeContents(td);
+                            const selection = window.getSelection();
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        };
+
+                        td.onblur = () => {
+                            tr.classList.remove('active-row');
+                            debouncedSaveCell(originalIndex, c, td);
+                        };
+
+                        td.onkeypress = (e) => {
+                            if (colDef.validation !== 'text' && (e.charCode < 48 || e.charCode > 57) && e.charCode !== 46 && e.key !== 'Enter') {
+                                e.preventDefault();
+                            }
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                td.blur();
+                            }
+                        };
+
+                        // تحقق من المهام المعلقة
+                        if (currentUser && currentUser.permissions.sync) {
+                            syncManager.getPendingTasksFromDB().then(tasks => {
+                                const pendingTask = tasks.find(t => t.row === originalIndex + 1 && COLUMN_HEADERS.find(h => h.col === c).letter === t.col);
+                                if (pendingTask) {
+                                    td.classList.add('pending-cell');
+                                    td.title = "تغيير معلق - جاري المزامنة";
+                                }
+                            }).catch(err => {
+                                console.error('Error checking pending tasks:', err);
+                            });
+                        }
+                    } else if (colDef.editable && isDataRow) {
+                        // إذا كانت الخلية قابلة للتحرير لكن المستخدم لا يملك الصلاحية
+                        td.title = "غير مسموح بالتعديل - صلاحيات غير كافية";
+                        td.style.cursor = "not-allowed";
+                        td.style.opacity = "0.8";
+                    }
+                    
+                    if (isInfoRow) {
+                        td.contentEditable = false;
+                    }
+
+                    tr.appendChild(td);
+                });
+
+                tableBody.appendChild(tr);
+            });
+            
+            // إضافة حدث التركيز للصفوف الجديدة
+            if (focusManager.isActive) {
+                document.querySelectorAll('#dataTable tr:not(:first-child):not(:last-child)').forEach(tr => {
+                    tr.style.cursor = 'pointer';
+                    tr.title = 'انقر للتركيز على هذا المشترك';
+                });
+            }
+        }
+
         // ===== نظام PWA والتثبيت المحسن =====
         let deferredPrompt = null;
         let installBtn = null;
@@ -2280,202 +3007,7 @@ body {
             }
         }
 
-        // ===== نظام التعرف الصوتي الجديد =====
-        const VoiceRecognition = {
-            recognition: null,
-            isListening: false,
-            currentCell: null,
-            currentSearchField: null,
-            
-            init: function() {
-                // التحقق من دعم Web Speech API
-                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                    console.warn('Web Speech API غير مدعوم في هذا المتصفح');
-                    return false;
-                }
-                
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                this.recognition = new SpeechRecognition();
-                
-                // إعداد خصائص التعرف الصوتي
-                this.recognition.continuous = false;
-                this.recognition.interimResults = false;
-                this.recognition.lang = 'ar-SA'; // اللغة العربية السعودية
-                
-                // أحداث التعرف الصوتي
-                this.recognition.onstart = () => {
-                    this.isListening = true;
-                    if (this.currentCell) {
-                        this.currentCell.querySelector('.microphone-cell-btn').classList.add('listening');
-                    }
-                    if (this.currentSearchField) {
-                        document.getElementById('searchMicrophoneBtn').classList.add('listening');
-                    }
-                    document.getElementById('voiceRecognitionPopup').classList.add('listening');
-                    document.getElementById('voiceStatus').textContent = 'جاري الاستماع...';
-                };
-                
-                this.recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    console.log('الكلام المقروء:', transcript);
-                    
-                    // تحويل النص العربي إلى أرقام إنجليزية
-                    const number = this.convertArabicToNumbers(transcript);
-                    document.getElementById('voiceResult').textContent = `الرقم: ${number}`;
-                    
-                    // إدخال الرقم في الحقل المناسب
-                    if (this.currentCell) {
-                        this.currentCell.textContent = number;
-                        this.currentCell.focus();
-                        setTimeout(() => {
-                            this.currentCell.blur();
-                        }, 100);
-                    } else if (this.currentSearchField) {
-                        this.currentSearchField.value = transcript;
-                        // تشغيل حدث البحث
-                        const event = new Event('input', { bubbles: true });
-                        this.currentSearchField.dispatchEvent(event);
-                    }
-                };
-                
-                this.recognition.onerror = (event) => {
-                    console.error('خطأ في التعرف الصوتي:', event.error);
-                    document.getElementById('voiceStatus').textContent = `خطأ: ${event.error}`;
-                    this.stop();
-                };
-                
-                this.recognition.onend = () => {
-                    this.stop();
-                };
-                
-                return true;
-            },
-            
-            startForCell: function(cell) {
-                if (!this.recognition) {
-                    if (!this.init()) {
-                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
-                        return;
-                    }
-                }
-                
-                this.currentCell = cell;
-                this.currentSearchField = null;
-                
-                // عرض نافذة التعرف الصوتي
-                document.getElementById('voiceRecognitionPopup').classList.add('active');
-                document.getElementById('voiceStatus').textContent = 'انطق الرقم الآن...';
-                document.getElementById('voiceResult').textContent = '';
-                
-                try {
-                    this.recognition.start();
-                } catch (error) {
-                    console.error('خطأ في بدء التعرف الصوتي:', error);
-                    showToast('خطأ في بدء التعرف الصوتي', 'error');
-                }
-            },
-            
-            startForSearch: function(searchField) {
-                if (!this.recognition) {
-                    if (!this.init()) {
-                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
-                        return;
-                    }
-                }
-                
-                this.currentSearchField = searchField;
-                this.currentCell = null;
-                
-                // عرض نافذة التعرف الصوتي
-                document.getElementById('voiceRecognitionPopup').classList.add('active');
-                document.getElementById('voiceStatus').textContent = 'انطق اسم المشترك للبحث...';
-                document.getElementById('voiceResult').textContent = '';
-                
-                try {
-                    this.recognition.start();
-                } catch (error) {
-                    console.error('خطأ في بدء التعرف الصوتي:', error);
-                    showToast('خطأ في بدء التعرف الصوتي', 'error');
-                }
-            },
-            
-            stop: function() {
-                if (this.recognition && this.isListening) {
-                    try {
-                        this.recognition.stop();
-                    } catch (error) {
-                        console.error('خطأ في إيقاف التعرف الصوتي:', error);
-                    }
-                }
-                
-                this.isListening = false;
-                
-                // إزالة حالة الاستماع من الأزرار
-                if (this.currentCell) {
-                    const btn = this.currentCell.querySelector('.microphone-cell-btn');
-                    if (btn) btn.classList.remove('listening');
-                }
-                
-                if (this.currentSearchField) {
-                    document.getElementById('searchMicrophoneBtn').classList.remove('listening');
-                }
-                
-                document.getElementById('voiceRecognitionPopup').classList.remove('listening');
-                
-                // إخفاء نافذة التعرف الصوتي بعد ثانيتين
-                setTimeout(() => {
-                    if (!this.isListening) {
-                        document.getElementById('voiceRecognitionPopup').classList.remove('active');
-                    }
-                }, 2000);
-                
-                this.currentCell = null;
-                this.currentSearchField = null;
-            },
-            
-            convertArabicToNumbers: function(text) {
-                if (!text) return '';
-                
-                // قاموس تحويل الأرقام العربية إلى إنجليزية
-                const numberMap = {
-                    'صفر': '0', '٠': '0',
-                    'واحد': '1', 'احد': '1', '١': '1',
-                    'اثنان': '2', 'اثنين': '2', '٢': '2',
-                    'ثلاثة': '3', 'ثلاث': '3', '٣': '3',
-                    'أربعة': '4', 'اربع': '4', 'اربعة': '4', '٤': '4',
-                    'خمسة': '5', 'خمس': '5', '٥': '5',
-                    'ستة': '6', 'ست': '6', '٦': '6',
-                    'سبعة': '7', 'سبع': '7', '٧': '7',
-                    'ثمانية': '8', 'ثمان': '8', '٨': '8',
-                    'تسعة': '9', 'تسع': '9', '٩': '9',
-                    'عشرة': '10', 'عشر': '10',
-                    'مائة': '100', 'مئه': '100',
-                    'ألف': '1000', 'الف': '1000',
-                    'مليون': '1000000'
-                };
-                
-                // تحويل النص إلى أرقام
-                let result = text;
-                
-                // استبدال الأرقام العربية
-                for (const [key, value] of Object.entries(numberMap)) {
-                    const regex = new RegExp(key, 'g');
-                    result = result.replace(regex, value);
-                }
-                
-                // إزالة أي أحرف غير رقمية (باستثناء النقاط والأرقام)
-                result = result.replace(/[^\d.]/g, '');
-                
-                return result;
-            }
-        };
-
-        // دالة لإيقاف التعرف الصوتي من خارج الكائن
-        function stopVoiceRecognition() {
-            VoiceRecognition.stop();
-        }
-
-        // ===== باقي الإعدادات الأساسية الأصلية =====
+        // ===== باقي الإعدادات الأساسية الأصلية (بدون تغيير) =====
         const villageAPIs = {
             "السوفعي": "https://script.google.com/macros/s/AKfycbxwk4kUq6iKrILZZj97hoHw4x8oJLTcJW_imP3J7LloQBR79DDlY31AAcRRHytcJNon/exec",
             "العليا": "https://script.google.com/macros/s/AKfycbwxfCWbufmKMvNZXzmuK6PqbmUSH7px3HmIQcJl2Am8vM5FCCNZHQ_kIrTBbzdDe6-aMQ/exec",
@@ -4049,225 +4581,7 @@ body {
             return { isValid: true, message: "" };
         }
 
-        async function saveCell(originalIndex, colIndex, cell) {
-            const rowData = dataManager.currentData[originalIndex];
-            const colDef = COLUMN_HEADERS.find(h => h.col === colIndex);
-
-            let rawValue = cell.textContent.trim();
-            let valueToSend = String(rawValue).replace(/,/g, '').trim();
-            
-            if ((colIndex === 11 || colIndex === 10) && (valueToSend === "" || valueToSend === "0")) {
-                valueToSend = "0";
-            }
-
-            const validation = validateCellInput(colIndex, rawValue, rowData);
-            if (!validation.isValid) {
-                showSaveNotification(false, validation.message);
-                const oldValue = dataManager.currentData[originalIndex][colIndex];
-                cell.textContent = formatNumber(oldValue, false, colIndex);
-                cell.focus();
-                return;
-            }
-
-            const colLetter = colDef.letter;
-
-            let newRow = rowData;
-            if (colIndex !== 13) {
-                newRow = recalculateRow(rowData, colIndex, valueToSend);
-            }
-            
-            // تحديث البيانات المحلية
-            dataManager.currentData[originalIndex] = newRow;
-            dataManager.updateRowCells(originalIndex, newRow);
-
-            // حفظ البيانات محلياً
-            await saveDataLocally(villageSelect.value, monthSelect.value, dataManager.currentData);
-
-            // إضافة مهمة مزامنة
-            const taskId = await syncManager.addSyncTask({
-                sheet: monthSelect.value,
-                row: originalIndex + 1,
-                col: colLetter,
-                value: valueToSend,
-                village: villageSelect.value,
-                timestamp: Date.now()
-            });
-
-            // تحديث واجهة الخلية
-            const globalRowIndex = dataManager.filteredData.findIndex(row => row === dataManager.currentData[originalIndex]);
-            if (globalRowIndex !== -1) {
-                const tableRow = tableBody.rows[globalRowIndex + 1];
-                if (tableRow && tableRow.cells[colIndex]) {
-                    tableRow.cells[colIndex].classList.add('pending-cell');
-                    tableRow.cells[colIndex].title = "تغيير معلق - جاري المزامنة";
-                }
-            }
-
-            showSaveNotification(true, 'تم حفظ التغيير وجاهز للمزامنة');
-            updateStatus('تم حفظ التغيير محلياً وجاهز للمزامنة');
-        }
-
         // ===== وظائف الواجهة المحسنة =====
-
-        function renderTable(data) {
-            // تنظيف الجدول القديم
-            tableBody.innerHTML = "";
-
-            if (!data || data.length < 3) {
-                renderErrorTable('لا توجد بيانات أو نتائج مطابقة.');
-                return;
-            }
-
-            const headerRow = document.createElement("tr");
-            COLUMN_HEADERS.forEach(col => {
-                const th = document.createElement("th");
-                th.style.width = col.width || 'auto';
-                th.innerHTML = `<i class="${col.icon}"></i> ${col.letter} <br> <span>${col.label}</span>`;
-                headerRow.appendChild(th);
-            });
-            tableBody.appendChild(headerRow);
-
-            data.forEach((row, rIndex) => {
-                if (rIndex === 0) return;
-
-                const tr = document.createElement("tr");
-                const originalIndex = dataManager.currentData.findIndex(d => d === row);
-                const isTotalRow = originalIndex === dataManager.totalRowIndex;
-                const isInfoRow = originalIndex === 1;
-                const isDataRow = originalIndex >= 2 && !isTotalRow;
-                
-                const consumptionF2 = parseFloat(row[5]) || 0;
-
-                if (isTotalRow) {
-                    tr.classList.add("total-row");
-                }
-                
-                if (consumptionF2 > 0 && isDataRow) {
-                    tr.style.backgroundColor = 'rgba(0, 180, 216, 0.1)';
-                    tr.style.borderRight = '4px solid var(--secondary)';
-                }
-
-                if (isInfoRow) {
-                    tr.style.backgroundColor = '#f0f0f0';
-                    tr.style.fontWeight = 'bold';
-                    tr.style.color = 'var(--primary)';
-                }
-
-                COLUMN_HEADERS.forEach((colDef, c) => {
-                    const td = document.createElement("td");
-                    let cellValue = row[c] !== undefined ? row[c] : "";
-
-                    if (c === 0) td.classList.add('col-a-bg');
-                    if (c === 1) td.classList.add('col-b-bg');
-
-                    if (c === 0 || (c >= 2 && c <= 12)) {
-                        td.textContent = formatNumber(cellValue, false, c);
-                        td.classList.add("number-cell");
-                    } else {
-                        td.textContent = cellValue;
-                    }
-
-                    if (c === 1) {
-                        td.classList.add("name-cell");
-                    }
-
-                    if (c === 5 && consumptionF2 > 0) {
-                        td.style.backgroundColor = 'var(--secondary)';
-                        td.style.color = 'white';
-                        td.style.fontWeight = 'bold';
-                    }
-
-                    if (c === 12 && !isNaN(row[c]) && parseFloat(row[c]) >= LATE_BALANCE_THRESHOLD && isDataRow) {
-                        td.style.backgroundColor = 'var(--danger)';
-                        td.style.color = 'white';
-                        td.style.fontWeight = 'bold';
-                    }
-
-                    if (colDef.editable && isDataRow) {
-                        td.classList.add("editable");
-                        td.contentEditable = true;
-                        td.setAttribute('data-original-index', originalIndex);
-                        
-                        // إضافة زر الميكروفون للخلايا القابلة للتحرير (خاصة المسلم والإيرادات)
-                        if (c === 11 || c === 10 || c === 3) {
-                            const microphoneBtn = document.createElement("button");
-                            microphoneBtn.className = "microphone-cell-btn";
-                            microphoneBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-                            microphoneBtn.title = "إدخال صوتي";
-                            microphoneBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                VoiceRecognition.startForCell(td);
-                            };
-                            td.appendChild(microphoneBtn);
-                        }
-
-                        td.onfocus = () => {
-                            tr.classList.add('active-row');
-                            
-                            let raw = String(row[c] || "").replace(/,/g, '').trim();
-                            
-                            if (c === 3 || c === 11 || c === 10) {
-                                if ((c === 11 || c === 10) && (raw === "0.00" || raw === "0" || raw === "")) {
-                                    td.textContent = "";
-                                } else {
-                                    td.textContent = parseFloat(raw) || "";
-                                }
-                            } else {
-                                td.textContent = raw;
-                            }
-                            
-                            const range = document.createRange();
-                            range.selectNodeContents(td);
-                            const selection = window.getSelection();
-                            selection.removeAllRanges();
-                            selection.addRange(range);
-                        };
-
-                        td.onblur = () => {
-                            tr.classList.remove('active-row');
-                            debouncedSaveCell(originalIndex, c, td);
-                        };
-
-                        td.onkeypress = (e) => {
-                            if (colDef.validation !== 'text' && (e.charCode < 48 || e.charCode > 57) && e.charCode !== 46 && e.key !== 'Enter') {
-                                e.preventDefault();
-                            }
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                td.blur();
-                            }
-                        };
-
-                        // تحقق من المهام المعلقة
-                        syncManager.getPendingTasksFromDB().then(tasks => {
-                            const pendingTask = tasks.find(t => t.row === originalIndex + 1 && COLUMN_HEADERS.find(h => h.col === c).letter === t.col);
-                            if (pendingTask) {
-                                td.classList.add('pending-cell');
-                                td.title = "تغيير معلق - جاري المزامنة";
-                            }
-                        }).catch(err => {
-                            console.error('Error checking pending tasks:', err);
-                        });
-                    }
-                    
-                    if (isInfoRow) {
-                        td.contentEditable = false;
-                    }
-
-                    tr.appendChild(td);
-                });
-
-                tableBody.appendChild(tr);
-            });
-            
-            // إضافة حدث التركيز للصفوف الجديدة
-            if (focusManager.isActive) {
-                document.querySelectorAll('#dataTable tr:not(:first-child):not(:last-child)').forEach(tr => {
-                    tr.style.cursor = 'pointer';
-                    tr.title = 'انقر للتركيز على هذا المشترك';
-                });
-            }
-        }
 
         function renderErrorTable(message) {
             tableBody.innerHTML = `<tr><td colspan="14" style="text-align:center;padding:30px;color:#999;font-size:1.1rem;">
@@ -4394,7 +4708,9 @@ body {
                 updateStatus('متصل بالشبكة - جاهز للمزامنة');
 
                 setTimeout(() => {
-                    syncManager.syncImmediately();
+                    if (currentUser && currentUser.permissions.sync) {
+                        syncManager.syncImmediately();
+                    }
                     dataManager.loadData(false);
                 }, 1000);
 
@@ -4682,6 +4998,12 @@ body {
         const AI_ANALYSIS_FUNCTION = {
             
             generateReport: function() {
+                // التحقق من صلاحية المستخدم
+                if (currentUser && currentUser.role === "accountant") {
+                    showToast("المحاسب ليس لديه صلاحية لاستخدام ميزة التحليل الذكي", "warning");
+                    return;
+                }
+                
                 aiAnalysisSection.style.display = 'block';
                 aiAnalysisContent.innerHTML = `<div style="text-align: center; color: var(--ai-color); padding: 20px;">
                     <div class="spinner"></div>
@@ -5182,13 +5504,20 @@ body {
         }
         
         function exportBackup() {
+            // التحقق من الصلاحية
+            if (!currentUser || !currentUser.permissions.backup) {
+                showToast("ليس لديك صلاحية لتصدير نسخة احتياطية", "warning");
+                return;
+            }
+            
             const data = {
                 village: villageSelect.value,
                 month: monthSelect.value,
                 data: dataManager.currentData,
                 metrics: dataManager.metrics,
                 timestamp: new Date().toISOString(),
-                version: '2.0'
+                version: '2.0',
+                exportedBy: currentUser.name
             };
             
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
@@ -5232,24 +5561,16 @@ body {
                         </div>
                     </div>
                     
-                    <h5 style="color: var(--primary); margin: 15px 0;">الميزات الأساسية:</h5>
-                    <ul style="list-style: none; padding: 0; margin: 0 0 20px 0;">
-                        <li style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> إدخال القراءات
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> حساب الفواتير
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> متابعة التحصيل
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> تقارير شاملة
-                        </li>
-                        <li style="padding: 8px 0;">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> عمل بدون إنترنت
-                        </li>
-                    </ul>
+                    <h5 style="color: var(--primary); margin: 15px 0;">معلومات المستخدم:</h5>
+                    <div style="background: rgba(0, 119, 182, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                            <div>
+                                <div style="font-weight: bold; font-size: 1.1rem;">${currentUser ? currentUser.name : 'غير معروف'}</div>
+                                <div style="font-size: 0.9rem;">${currentUser ? (currentUser.role === "admin" ? "مدير النظام" : currentUser.role === "cashier" ? "أمين الصندوق" : currentUser.role === "accountant" ? "محاسب" : "قارئ العداد") : 'غير معروف'}</div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div style="background: rgba(220, 53, 69, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px;">
                         <div style="font-size: 0.9rem; color: var(--text-light);">المهام المعلقة</div>
@@ -5278,11 +5599,24 @@ body {
         }
 
         function showExportModal() {
+            // التحقق من الصلاحية
+            if (!currentUser || !currentUser.permissions.export) {
+                showToast("ليس لديك صلاحية لتصدير البيانات", "warning");
+                return;
+            }
+            
             const modal = document.getElementById('exportModal');
             modal.classList.add('active');
         }
 
         function exportAsExcel() {
+            // التحقق من الصلاحية
+            if (!currentUser || !currentUser.permissions.export) {
+                showToast("ليس لديك صلاحية لتصدير البيانات", "warning");
+                closeModal('exportModal');
+                return;
+            }
+            
             showToast('جاري تصدير البيانات بصيغة Excel...', 'info');
             setTimeout(() => {
                 window.open('https://script.google.com/macros/s/AKfycby5t4c0M4tK1k8R6GvR-e9D3QhT1qQ_t5XnF6X1A_9I4K0X3K0B/exec', '_blank');
@@ -5291,12 +5625,20 @@ body {
         }
 
         function exportAsJSON() {
+            // التحقق من الصلاحية
+            if (!currentUser || !currentUser.permissions.export) {
+                showToast("ليس لديك صلاحية لتصدير البيانات", "warning");
+                closeModal('exportModal');
+                return;
+            }
+            
             const data = {
                 village: villageSelect.value,
                 month: monthSelect.value,
                 data: dataManager.currentData,
                 metrics: dataManager.metrics,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                exportedBy: currentUser.name
             };
             
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
@@ -5312,6 +5654,13 @@ body {
         }
 
         function exportAsCSV() {
+            // التحقق من الصلاحية
+            if (!currentUser || !currentUser.permissions.export) {
+                showToast("ليس لديك صلاحية لتصدير البيانات", "warning");
+                closeModal('exportModal');
+                return;
+            }
+            
             const data = dataManager.currentData;
             if (!data || data.length === 0) {
                 showToast('لا توجد بيانات للتصدير', 'error');
@@ -5458,111 +5807,36 @@ body {
                     dataManager.loadData(true);
                 });
 
-                // زر إظهار المتأخرين
-                toggleLateBalancesBtn.addEventListener('click', () => {
-                    dataManager.toggleLateBalances();
-                });
+                refreshBtn.addEventListener('click', () => dataManager.loadData(true));
+                
+                toggleLateBalancesBtn.addEventListener('click', () => dataManager.toggleLateBalances());
 
-                // ضبط الشهر الافتراضي
+                // تعيين الشهر الحالي افتراضياً
                 setDefaultMonth();
-                
-                // تحميل الإعدادات المحفوظة
-                const darkMode = localStorage.getItem('darkMode');
-                if (darkMode === 'enabled') {
-                    document.body.classList.add('dark-mode');
-                    darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> الوضع الفاتح';
-                    darkModeBtn.style.backgroundColor = '#ffc107';
-                }
-                
-                const highContrast = localStorage.getItem('highContrast');
-                if (highContrast === 'enabled') {
-                    document.body.classList.add('high-contrast');
-                    const contrastBtn = document.getElementById('contrastBtn');
-                    if (contrastBtn) {
-                        contrastBtn.innerHTML = '<i class="fas fa-adjust"></i> الوضع الطبيعي';
-                        contrastBtn.style.backgroundColor = '#343a40';
-                    }
-                }
-                
-                // تحميل البيانات الأولية (يتم بعد الدخول)
-                // dataManager.loadData(); // مؤقتاً معلق حتى دخول المستخدم
-                
-                // تفعيل التحديث التلقائي
-                autoRefreshToggle();
 
                 // تحديث واجهة المزامنة
                 syncManager.updateSyncUI();
-                
-                // تحديث إحصائيات الأداء
-                const endTime = performance.now();
+
+                // إضافة مستمع لتحميل PWA بعد تهيئة النظام
+                setTimeout(() => {
+                    initPWA();
+                }, 1000);
+
+                // إضافة مستمع لفحص الأداء
                 updatePerformanceStats();
-                
-                console.log('✅ تم تهيئة النظام الأساسي بنجاح (بانتظار الدخول)');
-                
-            } catch (error) {
-                console.error("خطأ في التهيئة:", error);
-                ErrorLogger.log(error, { action: 'initialization' });
-                updateStatus('خطأ في التهيئة', false, true);
-                showSaveNotification(false, 'خطأ في تهيئة النظام. يرجى تحديث الصفحة.');
-                showToast('خطأ في تهيئة النظام', 'error');
-            }
-        });
 
-        // إغلاق النوافذ المنبثقة عند النقر خارجها
-        document.addEventListener('click', (event) => {
-            const modals = document.querySelectorAll('.modal-overlay');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.classList.remove('active');
+                // عرض رسالة ترحيبية إذا كان النظام سريعاً
+                const loadTime = performance.now() - startTime;
+                if (loadTime < 2000) {
+                    console.log(`🚀 تم تحميل النظام في ${Math.round(loadTime)} مللي ثانية`);
                 }
-            });
-        });
 
-        // تسجيل أي أخطاء غير معالجة
-        window.addEventListener('error', (event) => {
-            ErrorLogger.log(event.error, { 
-                action: 'unhandledError',
-                filename: event.filename,
-                lineno: event.lineno,
-                colno: event.colno 
-            });
-        });
-
-        // تسجيل أخطاء الوعود غير المعالجة
-        window.addEventListener('unhandledrejection', (event) => {
-            ErrorLogger.log(event.reason, { 
-                action: 'unhandledRejection'
-            });
-        });
-
-        // تنظيف الذاكرة عند إغلاق الصفحة
-        window.addEventListener('beforeunload', () => {
-            memoryMonitor.stopMonitoring();
-            dataManager.stopAutoRefresh();
-            dataManager.cleanup();
-            syncManager.cleanup();
-            focusManager.cleanup();
-        });
-
-           // تنظيف الذاكرة عند إخفاء الصفحة
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                memoryMonitor.pauseCharts();
-            } else {
-                memoryMonitor.resumeCharts();
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة النظام:', error);
+                ErrorLogger.log(error, { action: 'initialization' });
+                showToast('حدث خطأ في تحميل النظام. يرجى إعادة تحميل الصفحة.', 'error');
             }
         });
     </script>
-
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker Registered'))
-            .catch(err => console.log('Service Worker Failed', err));
-        });
-      }
-    </script>
-
 </body>
 </html>
