@@ -735,44 +735,37 @@
             100% { border-right-color: var(--focus-color); }
         }
 
-        /* زر الميكروفون في الخلايا - تم تحسينه */
+        /* زر الميكروفون في الخلايا */
         .microphone-cell-btn {
-            position: absolute !important;
-            left: 5px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            background: var(--primary) !important;
-            color: white !important;
-            border: none !important;
-            cursor: pointer !important;
-            padding: 8px 10px !important;
-            font-size: 1.1rem !important;
-            border-radius: 50% !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-            transition: all 0.3s !important;
-            z-index: 100 !important;
-            width: 40px !important;
-            height: 40px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            transition: opacity 0.3s, color 0.3s;
+            z-index: 5;
         }
 
         .microphone-cell-btn:hover {
-            background: var(--secondary) !important;
-            transform: translateY(-50%) scale(1.1) !important;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+            opacity: 1;
+            color: var(--secondary);
         }
 
         .microphone-cell-btn.listening {
-            background: var(--danger) !important;
-            color: white !important;
-            animation: pulse 1.5s infinite !important;
+            color: var(--danger);
+            opacity: 1;
+            animation: pulse 1.5s infinite;
         }
 
         td.editable {
             position: relative;
-            padding-left: 50px !important;
+            padding-left: 30px !important;
         }
 
         .alert-section {
@@ -1653,6 +1646,18 @@ body {
     overflow: hidden !important; /* يمنع ظهور شريط التمرير */
     touch-action: none !important; /* يمنع تحريك الشاشة باللمس في الجوال */
 }
+
+}
+
+.login-card {
+    width: 90% !important;
+    max-width: 380px !important;
+    margin: auto !important;
+    /* نضمن عدم انزياح الكرت لليسار */
+    transform: none !important; 
+    direction: rtl !important; /* توجيه الكتابة من اليمين لليسار */
+}
+
     </style>
 </head>
 
@@ -2121,244 +2126,10 @@ body {
     </div>
 
     <script>
-        // ===== نظام التعرف الصوتي المحسن =====
-        const VoiceRecognition = {
-            recognition: null,
-            isListening: false,
-            currentCell: null,
-            currentSearchField: null,
-            
-            init: function() {
-                // التحقق من دعم Web Speech API
-                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                    console.warn('Web Speech API غير مدعوم في هذا المتصفح');
-                    return false;
-                }
-                
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                this.recognition = new SpeechRecognition();
-                
-                // إعداد خصائص التعرف الصوتي
-                this.recognition.continuous = false;
-                this.recognition.interimResults = false;
-                this.recognition.lang = 'ar-SA'; // اللغة العربية السعودية
-                
-                // أحداث التعرف الصوتي
-                this.recognition.onstart = () => {
-                    this.isListening = true;
-                    if (this.currentCell) {
-                        this.currentCell.querySelector('.microphone-cell-btn').classList.add('listening');
-                    }
-                    if (this.currentSearchField) {
-                        document.getElementById('searchMicrophoneBtn').classList.add('listening');
-                    }
-                    document.getElementById('voiceRecognitionPopup').classList.add('listening');
-                    document.getElementById('voiceStatus').textContent = 'جاري الاستماع...';
-                };
-                
-                this.recognition.onresult = async (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    console.log('الكلام المقروء:', transcript);
-                    
-                    // تحويل النص العربي إلى أرقام إنجليزية
-                    const number = this.convertArabicToNumbers(transcript);
-                    document.getElementById('voiceResult').textContent = `الرقم: ${number}`;
-                    
-                    // التحقق من الصلاحية قبل الإدخال
-                    if (this.currentCell) {
-                        const colIndex = Array.from(this.currentCell.parentNode.cells).indexOf(this.currentCell);
-                        
-                        // إجبار الخلية على كتابة الرقم
-                        this.forceCellValue(this.currentCell, number);
-                        
-                        // حفظ الخلية فوراً
-                        await this.saveCellImmediately(this.currentCell);
-                        
-                    } else if (this.currentSearchField) {
-                        this.currentSearchField.value = transcript;
-                        // تشغيل حدث البحث
-                        const event = new Event('input', { bubbles: true });
-                        this.currentSearchField.dispatchEvent(event);
-                    }
-                };
-                
-                this.recognition.onerror = (event) => {
-                    console.error('خطأ في التعرف الصوتي:', event.error);
-                    document.getElementById('voiceStatus').textContent = `خطأ: ${event.error}`;
-                    this.stop();
-                };
-                
-                this.recognition.onend = () => {
-                    this.stop();
-                };
-                
-                return true;
-            },
-            
-            forceCellValue: function(cell, value) {
-                // إجبار الخلية على كتابة الرقم مباشرة
-                cell.textContent = value;
-                cell.focus();
-                
-                // إضافة رسالة تأكيد
-                showToast(`تم إدخال الرقم: ${value}`, 'success', 2000);
-            },
-            
-            async saveCellImmediately(cell) {
-                // الحصول على بيانات الخلية
-                const originalIndex = parseInt(cell.getAttribute('data-original-index'));
-                const colIndex = Array.from(cell.parentNode.cells).indexOf(cell);
-                
-                if (isNaN(originalIndex) || colIndex === -1) {
-                    console.error('لا يمكن حفظ الخلية: بيانات غير صالحة');
-                    return;
-                }
-                
-                // استخدام دالة حفظ الخلية الأصلية
-                try {
-                    await saveCell(originalIndex, colIndex, cell);
-                    console.log('تم حفظ الخلية بنجاح');
-                } catch (error) {
-                    console.error('خطأ في حفظ الخلية:', error);
-                    showToast('خطأ في حفظ البيانات', 'error');
-                }
-            },
-            
-            startForCell: function(cell) {
-                // التحقق من الصلاحية أولاً
-                const colIndex = Array.from(cell.parentNode.cells).indexOf(cell);
-                if (!checkCellPermission(colIndex)) {
-                    showSaveNotification(false, "ليس لديك صلاحية للتعديل في هذا العمود");
-                    return;
-                }
-                
-                if (!this.recognition) {
-                    if (!this.init()) {
-                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
-                        return;
-                    }
-                }
-                
-                this.currentCell = cell;
-                this.currentSearchField = null;
-                
-                // عرض نافذة التعرف الصوتي
-                document.getElementById('voiceRecognitionPopup').classList.add('active');
-                document.getElementById('voiceStatus').textContent = 'انطق الرقم الآن...';
-                document.getElementById('voiceResult').textContent = '';
-                
-                try {
-                    this.recognition.start();
-                } catch (error) {
-                    console.error('خطأ في بدء التعرف الصوتي:', error);
-                    showToast('خطأ في بدء التعرف الصوتي', 'error');
-                }
-            },
-            
-            startForSearch: function(searchField) {
-                if (!this.recognition) {
-                    if (!this.init()) {
-                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
-                        return;
-                    }
-                }
-                
-                this.currentSearchField = searchField;
-                this.currentCell = null;
-                
-                // عرض نافذة التعرف الصوتي
-                document.getElementById('voiceRecognitionPopup').classList.add('active');
-                document.getElementById('voiceStatus').textContent = 'انطق اسم المشترك للبحث...';
-                document.getElementById('voiceResult').textContent = '';
-                
-                try {
-                    this.recognition.start();
-                } catch (error) {
-                    console.error('خطأ في بدء التعرف الصوتي:', error);
-                    showToast('خطأ في بدء التعرف الصوتي', 'error');
-                }
-            },
-            
-            stop: function() {
-                if (this.recognition && this.isListening) {
-                    try {
-                        this.recognition.stop();
-                    } catch (error) {
-                        console.error('خطأ في إيقاف التعرف الصوتي:', error);
-                    }
-                }
-                
-                this.isListening = false;
-                
-                // إزالة حالة الاستماع من الأزرار
-                if (this.currentCell) {
-                    const btn = this.currentCell.querySelector('.microphone-cell-btn');
-                    if (btn) btn.classList.remove('listening');
-                }
-                
-                if (this.currentSearchField) {
-                    document.getElementById('searchMicrophoneBtn').classList.remove('listening');
-                }
-                
-                document.getElementById('voiceRecognitionPopup').classList.remove('listening');
-                
-                // إخفاء نافذة التعرف الصوتي بعد ثانيتين
-                setTimeout(() => {
-                    if (!this.isListening) {
-                        document.getElementById('voiceRecognitionPopup').classList.remove('active');
-                    }
-                }, 2000);
-                
-                this.currentCell = null;
-                this.currentSearchField = null;
-            },
-            
-            convertArabicToNumbers: function(text) {
-                if (!text) return '';
-                
-                // قاموس تحويل الأرقام العربية إلى إنجليزية
-                const numberMap = {
-                    'صفر': '0', '٠': '0',
-                    'واحد': '1', 'احد': '1', '١': '1',
-                    'اثنان': '2', 'اثنين': '2', '٢': '2',
-                    'ثلاثة': '3', 'ثلاث': '3', '٣': '3',
-                    'أربعة': '4', 'اربع': '4', 'اربعة': '4', '٤': '4',
-                    'خمسة': '5', 'خمس': '5', '٥': '5',
-                    'ستة': '6', 'ست': '6', '٦': '6',
-                    'سبعة': '7', 'سبع': '7', '٧': '7',
-                    'ثمانية': '8', 'ثمان': '8', '٨': '8',
-                    'تسعة': '9', 'تسع': '9', '٩': '9',
-                    'عشرة': '10', 'عشر': '10',
-                    'مائة': '100', 'مئه': '100',
-                    'ألف': '1000', 'الف': '1000',
-                    'مليون': '1000000'
-                };
-                
-                // تحويل النص إلى أرقام
-                let result = text;
-                
-                // استبدال الأرقام العربية
-                for (const [key, value] of Object.entries(numberMap)) {
-                    const regex = new RegExp(key, 'g');
-                    result = result.replace(regex, value);
-                }
-                
-                // إزالة أي أحرف غير رقمية (باستثناء النقاط والأرقام)
-                result = result.replace(/[^\d.]/g, '');
-                
-                return result;
-            }
-        };
-
-        // دالة لإيقاف التعرف الصوتي من خارج الكائن
-        function stopVoiceRecognition() {
-            VoiceRecognition.stop();
-        }
-
         // ===== تعريف المستخدمين والصلاحيات =====
         const USERS = {
             "5674": {
-                name: "المدير",
+                name: "نصر العامري",
                 role: "admin",
                 permissions: {
                     editK: true,  // عمود K (إيرادات أخرى)
@@ -2372,7 +2143,7 @@ body {
                 }
             },
             "6785": {
-                name: "أمين الصندوق",
+                name: "سليمان الفرزعي",
                 role: "cashier",
                 permissions: {
                     editK: true,  // عمود K (إيرادات أخرى)
@@ -2386,7 +2157,7 @@ body {
                 }
             },
             "3452": {
-                name: "المحاسب",
+                name: "يوسف الحجاجي",
                 role: "accountant",
                 permissions: {
                     editK: false,  // عمود K (إيرادات أخرى)
@@ -2495,6 +2266,9 @@ body {
             // إخفاء شاشة الدخول بسلاسة
             loginScreen.classList.add("hidden");
             
+            // تشغيل الترحيب الصوتي حسب الصلاحية
+            playWelcomeMessage();
+            
             // بدء نظام PWA بعد الدخول
             setTimeout(() => {
                 initPWA();
@@ -2519,6 +2293,60 @@ body {
             setTimeout(() => {
                 dataManager.loadData(true);
             }, 1000);
+        }
+
+        // ===== دالة الترحيب الصوتي =====
+        function playWelcomeMessage() {
+            if (!('speechSynthesis' in window)) {
+                console.log('متصفحك لا يدعم التحدث الصوتي');
+                return;
+            }
+            
+            // إلغاء أي رسالة صوتية سابقة
+            speechSynthesis.cancel();
+            
+            let welcomeText = '';
+            
+            // تحديد نص الترحيب حسب الصلاحية
+            if (currentUser) {
+                switch(currentUser.role) {
+                    case "admin":
+                        welcomeText = "مرحبا بك نصر العامري مدير مشروع مياه السوفعي";
+                        break;
+                    case "accountant":
+                        welcomeText = "مرحبا بك يوسف الحجاجي محاسب مشروع مياه السوفعي";
+                        break;
+                    case "cashier":
+                        welcomeText = "مرحبا بك سليمان الفرزعي أمين صندوق مشروع مياه السوفعي";
+                        break;
+                    case "reader":
+                        welcomeText = "مرحبا بك قارئ عدادات مشروع مياه السوفعي";
+                        break;
+                    default:
+                        welcomeText = "مرحبا بك في نظام إدارة مياه السوفعي";
+                }
+            }
+            
+            // إنشاء رسالة صوتية
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = welcomeText;
+            speech.lang = 'ar-SA'; // اللغة العربية السعودية
+            speech.rate = 1.0; // سرعة النطق
+            speech.pitch = 1.0; // طبقة الصوت
+            speech.volume = 1.0; // مستوى الصوت
+            
+            // بدء التحدث
+            speechSynthesis.speak(speech);
+            
+            // إضافة حدث عند انتهاء التحدث
+            speech.onend = function() {
+                console.log('تم تشغيل رسالة الترحيب الصوتية');
+            };
+            
+            // معالجة الأخطاء
+            speech.onerror = function(event) {
+                console.error('خطأ في التحدث الصوتي:', event);
+            };
         }
         
         function updateSidebarUserInfo() {
@@ -2571,6 +2399,9 @@ body {
         
         function logout() {
             if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+                // إيقاف أي رسالة صوتية جارية
+                speechSynthesis.cancel();
+                
                 // مسح بيانات الجلسة
                 sessionStorage.removeItem("loggedIn");
                 sessionStorage.removeItem("currentUser");
@@ -2791,12 +2622,12 @@ body {
                         td.contentEditable = true;
                         td.setAttribute('data-original-index', originalIndex);
                         
-                        // إضافة زر الميكروفون المحسن للخلايا القابلة للتحرير
+                        // إضافة زر الميكروفون للخلايا القابلة للتحرير (خاصة المسلم والإيرادات)
                         if (c === 11 || c === 10 || c === 3) {
                             const microphoneBtn = document.createElement("button");
                             microphoneBtn.className = "microphone-cell-btn";
                             microphoneBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-                            microphoneBtn.title = "إدخال صوتي (اضغط للبدء)";
+                            microphoneBtn.title = "إدخال صوتي";
                             microphoneBtn.onclick = (e) => {
                                 e.stopPropagation();
                                 VoiceRecognition.startForCell(td);
@@ -3005,6 +2836,214 @@ body {
                     installSidebarBtn.disabled = false;
                 }
             }
+        }
+
+        // ===== نظام التعرف الصوتي الجديد =====
+        const VoiceRecognition = {
+            recognition: null,
+            isListening: false,
+            currentCell: null,
+            currentSearchField: null,
+            
+            init: function() {
+                // التحقق من دعم Web Speech API
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    console.warn('Web Speech API غير مدعوم في هذا المتصفح');
+                    return false;
+                }
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                
+                // إعداد خصائص التعرف الصوتي
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                this.recognition.lang = 'ar-SA'; // اللغة العربية السعودية
+                
+                // أحداث التعرف الصوتي
+                this.recognition.onstart = () => {
+                    this.isListening = true;
+                    if (this.currentCell) {
+                        this.currentCell.querySelector('.microphone-cell-btn').classList.add('listening');
+                    }
+                    if (this.currentSearchField) {
+                        document.getElementById('searchMicrophoneBtn').classList.add('listening');
+                    }
+                    document.getElementById('voiceRecognitionPopup').classList.add('listening');
+                    document.getElementById('voiceStatus').textContent = 'جاري الاستماع...';
+                };
+                
+                this.recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    console.log('الكلام المقروء:', transcript);
+                    
+                    // تحويل النص العربي إلى أرقام إنجليزية
+                    const number = this.convertArabicToNumbers(transcript);
+                    document.getElementById('voiceResult').textContent = `الرقم: ${number}`;
+                    
+                    // التحقق من الصلاحية قبل الإدخال
+                    if (this.currentCell) {
+                        const colIndex = Array.from(this.currentCell.parentNode.cells).indexOf(this.currentCell);
+                        if (!checkCellPermission(colIndex)) {
+                            showSaveNotification(false, "ليس لديك صلاحية للتعديل في هذا العمود");
+                            return;
+                        }
+                        
+                        this.currentCell.textContent = number;
+                        this.currentCell.focus();
+                        setTimeout(() => {
+                            this.currentCell.blur();
+                        }, 100);
+                    } else if (this.currentSearchField) {
+                        this.currentSearchField.value = transcript;
+                        // تشغيل حدث البحث
+                        const event = new Event('input', { bubbles: true });
+                        this.currentSearchField.dispatchEvent(event);
+                    }
+                };
+                
+                this.recognition.onerror = (event) => {
+                    console.error('خطأ في التعرف الصوتي:', event.error);
+                    document.getElementById('voiceStatus').textContent = `خطأ: ${event.error}`;
+                    this.stop();
+                };
+                
+                this.recognition.onend = () => {
+                    this.stop();
+                };
+                
+                return true;
+            },
+            
+            startForCell: function(cell) {
+                // التحقق من الصلاحية أولاً
+                const colIndex = Array.from(cell.parentNode.cells).indexOf(cell);
+                if (!checkCellPermission(colIndex)) {
+                    showSaveNotification(false, "ليس لديك صلاحية للتعديل في هذا العمود");
+                    return;
+                }
+                
+                if (!this.recognition) {
+                    if (!this.init()) {
+                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
+                        return;
+                    }
+                }
+                
+                this.currentCell = cell;
+                this.currentSearchField = null;
+                
+                // عرض نافذة التعرف الصوتي
+                document.getElementById('voiceRecognitionPopup').classList.add('active');
+                document.getElementById('voiceStatus').textContent = 'انطق الرقم الآن...';
+                document.getElementById('voiceResult').textContent = '';
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('خطأ في بدء التعرف الصوتي:', error);
+                    showToast('خطأ في بدء التعرف الصوتي', 'error');
+                }
+            },
+            
+            startForSearch: function(searchField) {
+                if (!this.recognition) {
+                    if (!this.init()) {
+                        showToast('التعرف الصوتي غير مدعوم في متصفحك', 'error');
+                        return;
+                    }
+                }
+                
+                this.currentSearchField = searchField;
+                this.currentCell = null;
+                
+                // عرض نافذة التعرف الصوتي
+                document.getElementById('voiceRecognitionPopup').classList.add('active');
+                document.getElementById('voiceStatus').textContent = 'انطق اسم المشترك للبحث...';
+                document.getElementById('voiceResult').textContent = '';
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('خطأ في بدء التعرف الصوتي:', error);
+                    showToast('خطأ في بدء التعرف الصوتي', 'error');
+                }
+            },
+            
+            stop: function() {
+                if (this.recognition && this.isListening) {
+                    try {
+                        this.recognition.stop();
+                    } catch (error) {
+                        console.error('خطأ في إيقاف التعرف الصوتي:', error);
+                    }
+                }
+                
+                this.isListening = false;
+                
+                // إزالة حالة الاستماع من الأزرار
+                if (this.currentCell) {
+                    const btn = this.currentCell.querySelector('.microphone-cell-btn');
+                    if (btn) btn.classList.remove('listening');
+                }
+                
+                if (this.currentSearchField) {
+                    document.getElementById('searchMicrophoneBtn').classList.remove('listening');
+                }
+                
+                document.getElementById('voiceRecognitionPopup').classList.remove('listening');
+                
+                // إخفاء نافذة التعرف الصوتي بعد ثانيتين
+                setTimeout(() => {
+                    if (!this.isListening) {
+                        document.getElementById('voiceRecognitionPopup').classList.remove('active');
+                    }
+                }, 2000);
+                
+                this.currentCell = null;
+                this.currentSearchField = null;
+            },
+            
+            convertArabicToNumbers: function(text) {
+                if (!text) return '';
+                
+                // قاموس تحويل الأرقام العربية إلى إنجليزية
+                const numberMap = {
+                    'صفر': '0', '٠': '0',
+                    'واحد': '1', 'احد': '1', '١': '1',
+                    'اثنان': '2', 'اثنين': '2', '٢': '2',
+                    'ثلاثة': '3', 'ثلاث': '3', '٣': '3',
+                    'أربعة': '4', 'اربع': '4', 'اربعة': '4', '٤': '4',
+                    'خمسة': '5', 'خمس': '5', '٥': '5',
+                    'ستة': '6', 'ست': '6', '٦': '6',
+                    'سبعة': '7', 'سبع': '7', '٧': '7',
+                    'ثمانية': '8', 'ثمان': '8', '٨': '8',
+                    'تسعة': '9', 'تسع': '9', '٩': '9',
+                    'عشرة': '10', 'عشر': '10',
+                    'مائة': '100', 'مئه': '100',
+                    'ألف': '1000', 'الف': '1000',
+                    'مليون': '1000000'
+                };
+                
+                // تحويل النص إلى أرقام
+                let result = text;
+                
+                // استبدال الأرقام العربية
+                for (const [key, value] of Object.entries(numberMap)) {
+                    const regex = new RegExp(key, 'g');
+                    result = result.replace(regex, value);
+                }
+                
+                // إزالة أي أحرف غير رقمية (باستثناء النقاط والأرقام)
+                result = result.replace(/[^\d.]/g, '');
+                
+                return result;
+            }
+        };
+
+        // دالة لإيقاف التعرف الصوتي من خارج الكائن
+        function stopVoiceRecognition() {
+            VoiceRecognition.stop();
         }
 
         // ===== باقي الإعدادات الأساسية الأصلية (بدون تغيير) =====
@@ -5808,35 +5847,40 @@ body {
                 });
 
                 refreshBtn.addEventListener('click', () => dataManager.loadData(true));
-                
+
                 toggleLateBalancesBtn.addEventListener('click', () => dataManager.toggleLateBalances());
 
                 // تعيين الشهر الحالي افتراضياً
                 setDefaultMonth();
 
-                // تحديث واجهة المزامنة
-                syncManager.updateSyncUI();
-
-                // إضافة مستمع لتحميل PWA بعد تهيئة النظام
-                setTimeout(() => {
-                    initPWA();
-                }, 1000);
-
-                // إضافة مستمع لفحص الأداء
-                updatePerformanceStats();
-
-                // عرض رسالة ترحيبية إذا كان النظام سريعاً
-                const loadTime = performance.now() - startTime;
-                if (loadTime < 2000) {
-                    console.log(`🚀 تم تحميل النظام في ${Math.round(loadTime)} مللي ثانية`);
+                // تحميل البيانات الأولية
+                if (currentUser) {
+                    setTimeout(() => {
+                        dataManager.loadData(false);
+                    }, 1500);
                 }
+
+                // تحديث بيانات تقرير القرى الشهري
+                fetchMonthlyReportData();
+
+                // تحسين الأداء
+                setTimeout(() => {
+                    updatePerformanceStats();
+                    memoryMonitor.startMonitoring();
+                }, 3000);
+
+                const endTime = performance.now();
+                console.log(`⏱️ وقت تحميل النظام: ${Math.round(endTime - startTime)} مللي ثانية`);
 
             } catch (error) {
                 console.error('❌ خطأ في تهيئة النظام:', error);
                 ErrorLogger.log(error, { action: 'initialization' });
-                showToast('حدث خطأ في تحميل النظام. يرجى إعادة تحميل الصفحة.', 'error');
+                showToast('حدث خطأ في تهيئة النظام. يرجى تحديث الصفحة.', 'error');
             }
         });
+
     </script>
+
 </body>
+
 </html>
